@@ -1,5 +1,3 @@
-package lab1Algo;
-
 import java.util.ArrayList;
 import java.util.Random;
 
