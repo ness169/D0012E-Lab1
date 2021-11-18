@@ -6,184 +6,268 @@ public class Main {
 	
 	public static void main(String[] args) {
 		Random rand = new Random();
-		ArrayList<Integer> datSet = new ArrayList<Integer>();
+		int[] datSet = new int[100];
 		for (int i = 0; i < 100; i++) {
-			datSet.add(rand.nextInt(100));
-			System.out.print(datSet.get(i) + " ");
+			datSet[i] = rand.nextInt(100);
+			//System.out.print(" " + datSet[i]);
 		}
-		ArrayList<Integer> insertSorted = insertSort(datSet);
-		ArrayList<Integer> bSorted = bSort(datSet);
-		ArrayList<Integer> mergeSorted = mergeSort(datSet, 5);
-		System.out.print("\n \n");
-		for (int i = 0; i < 100; i++) {
-			System.out.print(mergeSorted.get(i) + " ");
-		}
-
-	}
-	
-	public static ArrayList<Integer> insertSort(ArrayList<Integer> unsorted) {
-		ArrayList<Integer> sorted = new ArrayList();
-		sorted.add(unsorted.get(0));
-		for (int i = 1; i < unsorted.size(); i++) {
-			int j = 0;
-			while(true) {
-				if(j == sorted.size()) {
-					sorted.add(unsorted.get(i));
-					break;
-				}
-				else if (unsorted.get(i) < sorted.get(j)){
-					sorted.add(j, unsorted.get(i));
-					break;
-				}
-				else {
-				j++;
-				}
-			}
 		
-		}
-		return sorted;
+		//========PRINTING===========
+		//Print out the unsorted data set:
+		System.out.print("Un-sorted: [");
+        for(int i = 0; i<datSet.length;i++) {
+        	System.out.print(datSet[i] + ",");
+        }
+        System.out.print("] \n");
+        
+        //Print out the insertionsorted data set:
+		System.out.print("i Sorted: [");
+        for(int i = 0; i<datSet.length;i++) {
+        	System.out.print(insertionSort(datSet, datSet.length)[i] + ",");
+        }
+        System.out.print("] \n");
+		
+		
+        //Print out the bsorted data set:
+		System.out.print("b Sorted: [");
+        for(int i = 0; i<datSet.length;i++) {
+        	System.out.print(bSort(datSet)[i] + ",");
+        }
+        System.out.print("] \n\n");
+		
+        
+      //===========MergeSort #1=========================
+        long t1 = System.nanoTime();
+        int [] outArray1 = mergeSort_1(datSet, 5);
+        long t2 = System.nanoTime();
+        long performance1 = t2-t1;
+        System.out.println("Time for mergeSort with insertionSort:" + performance1 + "ns");
+        
+        
+        System.out.print("Merge Sorted: [");
+        for(int i = 0; i<datSet.length;i++) {
+        	System.out.print(outArray1[i] + ",");
+        }
+        System.out.print("] \n");
+        
+        //==========MergeSort #2========================
+        long t3 = System.nanoTime();
+        int [] outArray2 = mergeSort_2(datSet, 7);
+        long t4 = System.nanoTime();
+        long performance2 = t4-t3;
+        System.out.println("Time for mergeSort with bSort:" + performance2 + "ns");
+        
+        
+        System.out.print("bMerge Sorted: [");
+        for(int i = 0; i<datSet.length;i++) {
+        	System.out.print(outArray2[i] + ",");
+        }
+        System.out.print("] \n");
+        
 	}
 	
-	public static ArrayList<Integer> bSort(ArrayList<Integer> unsorted) {
-		ArrayList<Integer> sorted = new ArrayList();
-		sorted.add(unsorted.get(0));
-		boolean direction = true;
-		boolean found;
-		for(int i = 1; i< unsorted.size(); i++) {
-			int position = sorted.size()/2;
-			int divider = 2;
-			found = false;
-			while (!found) {
-				if (direction) {
-					while(true) {
-						if(unsorted.get(i) >= sorted.get(position)) {
-							if(position==sorted.size() - 1) {
-								sorted.add(unsorted.get(i));
-								found=true;
-								break;
-							}
-							else if(unsorted.get(i) <= sorted.get(position+1)) {
-								sorted.add(position + 1, unsorted.get(i));
-								found=true;
-								break;
-							}
-							else {
-								if((double) sorted.size()/divider < (double) 1/(sorted.size())) {
-									position++;
-								}
-								else {
-									divider *= 2;
-									position = position + sorted.size()/divider;
-								}
-							}
-						}
-						else {
-							direction=false;
-							break;
-						}
+	static int[] insertionSort(int array[], int array_length)
+    {
+        // The base case
+        if (array_length <= 1)
+            return array;
+    
+        // Sort first n-1 elements
+        insertionSort( array, array_length-1 );
+    
+        //Put last element at correct location
+        int last = array[array_length-1];
+        int j = array_length-2;
+    
+        //Move elements of array > key
+        while (j >= 0 && array[j] > last)
+        {
+            array[j+1] = array[j];
+            j--;
+        }
+        
+        //Put the last one where it should be in array
+        array[j+1] = last;
+        
+        return array;
+    }
+	
+	
+	static int[] bSort(int array[])
+    {
+        for (int i = 1; i < array.length; i++)
+        {
+            int key = array[i];
+ 
+            int hi = i;
+            int lo = 0;
+            
+            //Find where to put the current key by binary search
+            int j = Math.abs(BinarySearch(array, key, lo, hi));
+            
+            //Shift array right
+            System.arraycopy(array, j, array, j + 1, i - j);
+ 
+            //Assign key to the found index of array 
+            array[j] = key;
+        }
+        
+        return array;
+    }
+	
+	
+	/*
+	 * This is a function that uses binary search 
+	 * to find a place to put the element with value 'key'
+	 * in the array and returns an index number
+	 */
+	 
+	static int BinarySearch(int[] array, int key, int lo, int hi) {
+			    
+				int index = Integer.MAX_VALUE;
+			    
+			    while (lo <= hi) {
+			        int mid = lo  + ((hi - lo) / 2);
+			        if (array[mid] < key) {
+			            lo = mid + 1;
+			        } else if (array[mid] > key) {
+			            hi = mid - 1;
+			        } else if (array[mid] == key) {
+			            index = mid;
+			            break;
+			        }
+			    }
+			    return index;
+	}
+	
+	
+	static int[] mergeSort_1(int[] array, int k) {
+		
+		
+		int n = array.length;
+		
+		int[] result = new int[n];
+		
+		//Size of chunks that will be sorted
+		int chunkSize = Math.floorDiv(n, k);
+		
+		
+		
+		if(chunkSize <= 0) {
+			return null;
+		}
+		
+		int rest = n % chunkSize;
+		
+		int numberOfChunks = n / chunkSize + (rest > 0 ? 1 : 0);
+		
+		//Hold chunks in a 2D-array
+		int [][] splittedArrays = new int[numberOfChunks][];
+		
+		//Traverse array chunk by chunk and assign each chunk an index in the splitted array
+		for(int i = 0; i< (rest > 0 ? numberOfChunks -1 : numberOfChunks); i++) {
+			splittedArrays[i] = Arrays.copyOfRange(array, (numberOfChunks -1)*chunkSize,(numberOfChunks -1)*chunkSize + rest);
+		}
+		
+		//Time to do the sorting on each block
+		for(int i = 0; i<numberOfChunks; i++) {
+			splittedArrays[i] = insertionSort(splittedArrays[i], splittedArrays[i].length);
+			
+		}
+		
+		//The merging
+		for(int i = 0; i<numberOfChunks; i++) {
+			for(int j=0;j<splittedArrays[i].length;j++) {
+				array[j] = splittedArrays[i][j];
+			}
+			
+			
+		}
+		
+		
+		return array;
+	}
+	
+static int[] mergeSort_2(int[] array, int k) {
+		
+		
+		int n = array.length;
+		
+		int[] result = new int[n];
+		int[] merge1 = new int[n];
+		int[] merge2 = new int[n];
+		
+		//The backbone of the recursive algorithm, after splitting the array into parts it returns a sorted subArray
+		if (k==1) {
+			return bSort(array);
+		}
+		//Whenever there needs to be an unneven splitting of the array, 1 array will be created seperately as well 
+		//as a subArray with an even number of further splits.
+		else if (k % 2 == 1) {
+			//creates a subarray that contains a k:th of the original array (rounded down + the rest). 
+			int[] subArray1 = new int[n/k + (n % k)];
+			for (int i = 0; i < n / k + (n % k); i++) {
+				subArray1[i] = array[i];
+			}
+			//creates a subarray that contains whatever was left from the original array that wasn't already copied
+			//by the previous subarray
+			int[] subArray2 = new int[n - n / k - n % k];
+			for (int i = 0; i < n - n / k - n % k; i++) {
+				subArray2[i] = array[i + n / k + n % k];
+			}
+			//adds the subArrays to the appropriate arrays for later merging. 
+			merge1 = mergeSort_2(subArray1, 1);
+			merge2 = mergeSort_2(subArray2, k-1);
+		}
+		//The else is called whenever there is an even splitting of the code, splitting the array into 2 equal parts
+		//that'll be split further an equal number of times. 
+		else {
+			//Creates 2 subarrays containing a half of the original array's contents each
+			int[] subArray1 = new int[n / 2];
+			int[] subArray2 = new int[n / 2];
+			for (int i = 0; i < n / 2; i++) {
+				subArray1[i] = array[i];
+				subArray2[i] = array[i + n / 2];
+			}
+			//adds the subArrays to the appropriate arrays for later merging. 
+			merge1 = mergeSort_2(subArray1, k/2);
+			merge2 = mergeSort_2(subArray2, k/2);
+		}
+		
+		//counter to keep track of the index of the integers to be compared
+		int indexCount1 = 0;
+		int indexCount2 = 0;
+		//Merges the 2 subarrays
+		for (int i = 0; i < n; i++) {
+			//compares the lowest unadded value of each list and adds the lowest to the end of a resulting list
+			if (merge1[indexCount1] <= merge2[indexCount2]) {
+				result[i] = merge1[indexCount1];
+				indexCount1++;
+				//When 1 list is depleted then the rest of the other list is simply added to the end. 
+				if (merge1.length == indexCount1) {
+					i++;
+					while (i < n) {
+						result[i] = merge2[indexCount2];
+						indexCount2++;
+						i++;
 					}
 				}
-				else {
-					while(true) {
-						if (position == 0) {
-							if (unsorted.get(i) <= sorted.get(position)) {
-								sorted.add(0, unsorted.get(i));
-								found=true;
-								break;
-							}
-							else {
-								direction=true;
-								break;
-							}
-						}
-						else if(unsorted.get(i)<sorted.get(position)) {
-							if((double) sorted.size()/divider < (double) 1/(sorted.size())) {
-								position--;
-							}
-							else {
-								divider *= 2;
-								position = position - (sorted.size()/divider);
-							}
-							
-						}
-						else {
-							direction=true;
-							break;
-						}
+			}
+			else if (merge1[indexCount1] >= merge2[indexCount2]) {
+				result[i] = merge2[indexCount2];
+				indexCount2++;
+				if (merge2.length == indexCount2) {
+					while (i < n) {
+						result[i] = merge1[indexCount1];
+						indexCount1++;
+						i++;
 					}
 				}
 			}
 			
 		}
 		
-		
-		return sorted;
-		
-	}
-	
-	public static ArrayList mergeSort(ArrayList<Integer> unsorted_array, int k) {
-		ArrayList<Integer> sublists = new ArrayList();
-		boolean unevenK = false;
-		if (k == 1) {
-			bSort(unsorted_array);
-			return insertSort(unsorted_array);
-		}
-		else if (k > 1 && k%2 == 0) {
-			ArrayList<Integer> toSort1 = new ArrayList<Integer>();
-			ArrayList<Integer> toSort2 = new ArrayList<Integer>();
-			toSort1.addAll(unsorted_array.subList(0, unsorted_array.size()/2));
-			toSort2.addAll(unsorted_array.subList(unsorted_array.size()/2, unsorted_array.size()));
-			sublists.addAll(mergeSort(toSort1, k/2));
-			sublists.addAll(mergeSort(toSort2, k/2));
-		}
-		else {
-			unevenK=true;
-			ArrayList<Integer> toSort1 = new ArrayList<Integer>();
-			ArrayList<Integer> toSort2 = new ArrayList<Integer>();
-			toSort1.addAll(unsorted_array.subList(0, unsorted_array.size()/k));
-			toSort2.addAll(unsorted_array.subList(unsorted_array.size()/k, unsorted_array.size()));
-			sublists.addAll(mergeSort(toSort1, 1));
-			sublists.addAll(mergeSort(toSort2, k-1));
-		}
-
-		ArrayList<Integer> merged = new ArrayList<Integer>();
-		ArrayList<Integer> split1 = new ArrayList();
-		ArrayList<Integer> split2 = new ArrayList();
-		if(unevenK) {
-			split1.addAll(sublists.subList(0, unsorted_array.size()/k));
-			split2.addAll(sublists.subList(unsorted_array.size()/k, unsorted_array.size()));
-		}
-		else {
-			split1.addAll(sublists.subList(0, unsorted_array.size()/2));
-			split2.addAll(sublists.subList(unsorted_array.size()/2, unsorted_array.size()));	
-		}
-		for(int i = 0; i<unsorted_array.size(); i++) {
-			if (split1.get(split1.size()-1) > split2.get(split2.size()-1)) {
-				merged.add(0, split1.get(split1.size()-1));
-				split1.remove(split1.size()-1);
-				if(split1.isEmpty()) {
-					int stop = split2.size();
-					for(int j = 0; j < stop; j++) {
-						merged.add(0, split2.get(split2.size()-1));
-						split2.remove(split2.size()-1);
-					}
-					break;
-				}
-			}
-			else {
-				merged.add(0, split2.get(split2.size()-1));
-				split2.remove(split2.size()-1);
-				if(split2.isEmpty()) {
-					int stop = split1.size();
-					for(int j = 0; j < stop; j++) {
-						merged.add(0, split1.get(split1.size()-1));
-						split1.remove(split1.size()-1);
-					}
-					break;
-				}
-			}
-		}
-		return merged;
+		return result;
 	}
 
 }
