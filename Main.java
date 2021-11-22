@@ -1,8 +1,10 @@
 import java.util.ArrayList;
 import java.util.Random;
 
+
+public class main {
 public static void main(String[] args) {
-		Random rand = new Random();
+		/*Random rand = new Random();
 		int[] datSet = new int[100];
 		for (int i = 0; i < 100; i++) {
 			datSet[i] = rand.nextInt(100);
@@ -65,14 +67,14 @@ public static void main(String[] args) {
         for(int i = 0; i<datSet.length;i++) {
         	System.out.print(outArray2[i] + ",");
         }
-        System.out.print("] \n");
+        System.out.print("] \n");*/
         
         
         //Get averages for each input size
-        /*int inputSize = 1000; //Define input size here
+        int inputSize = 10000; //Define input size here
         long time_ns = 0;
-        int numberOfMeasurements = 10000;
-        int k = 7;
+        int numberOfMeasurements = 1000;
+        int k = 200;
         
         for(int i=0;i<numberOfMeasurements;i++) {
         	//Generate a random sequence of numbers
@@ -91,8 +93,28 @@ public static void main(String[] args) {
             //System.out.println("Time for mergeSort with insertionSort:" + performance1 + "ns");
         }
         
+        long time_ns2 = 0;
+        
+        for(int i=0;i<numberOfMeasurements;i++) {
+        	//Generate a random sequence of numbers
+        	Random rand2 = new Random();
+    		int[] dataSet = new int[inputSize];
+    		for (int j = 0; j < dataSet.length; j++) {
+    			dataSet[j] = rand2.nextInt(100);
+    			//System.out.print(" " + datSet[i]);
+    		}
+    		
+    		//Do the measurements and save the time in time_ns
+    		long t1 = System.nanoTime();
+            int [] outArray1 = mergeSort_1(dataSet, k);
+            long t2 = System.nanoTime();
+            time_ns2 += t2-t1;
+            //System.out.println("Time for mergeSort with insertionSort:" + performance1 + "ns");
+        }
+        
         //Print out the average time
-        System.out.println("Time for mergeSort2: " + time_ns/numberOfMeasurements/1000 + " microseconds");*/
+        System.out.println("Time for mergeSort2: " + time_ns/numberOfMeasurements/1000 + " microseconds");
+        System.out.println("Time for mergeSort1: " + time_ns2/numberOfMeasurements/1000 + " microseconds");
 	}
 	
 	
